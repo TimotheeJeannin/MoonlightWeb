@@ -1,28 +1,38 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
 
-var backgroundColorCounts = {};
-var colorCounts = {};
+var transformColor = function (color:JQueryColor):JQueryColor {
+    return color.lightness(1 - color.lightness())
+};
+
+var colorAttributes = [
+    'backgroundColor',
+    'color',
+    'borderColor',
+    'borderTopColor',
+    'borderRightColor',
+    'borderLeftColor',
+    'borderBottomColor'
+];
 
 $.each(document.styleSheets, function (index, styleSheet) {
     if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
         $.each(styleSheet.cssRules, function (index, rule) {
-            if (rule.style && rule.style.backgroundColor) {
-                if (rule.style.backgroundColor in backgroundColorCounts) {
-                    backgroundColorCounts[rule.style.backgroundColor]++;
-                } else {
-                    backgroundColorCounts[rule.style.backgroundColor] = 1;
-                }
-            } else if (rule.style && rule.style.color) {
-                if (rule.style.color in colorCounts) {
-                    colorCounts[rule.style.color]++;
-                } else {
-                    colorCounts[rule.style.color] = 1;
+            if (rule.style) {
+                $.each(colorAttributes, function (index, attribute) {
+                    if (rule.style[attribute]) {
+                        rule.style[attribute] = transformColor($.Color(rule.style[attribute]));
+                    }
+                });
+                if (rule.style.backgroundImage && (
+                        rule.style.backgroundImage.startsWith('linear-gradient') ||
+                        rule.style.backgroundImage.startsWith('radial-gradient') ||
+                        rule.style.backgroundImage.startsWith('repeating-linear-gradient') ||
+                        rule.style.backgroundImage.startsWith('repeating-radial-gradient')
+                    )) {
+                    console.log(rule.style.backgroundImage, rule);
                 }
             }
         });
     }
 });
-
-console.log(backgroundColorCounts);
-console.log(colorCounts);
