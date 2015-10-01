@@ -1,12 +1,29 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
-$('*').each(function () {
-    var color = jQuery.Color($(this).css('background-color'));
-    var reduction = 50;
-    if (color.alpha() > 0) {
-        var newColor = color.red(color.red() > reduction ? color.red() - reduction : color.red()).green(color.green() > reduction ? color.green() - reduction : color.green()).blue(color.blue() > reduction ? color.blue() - reduction : color.blue());
-        console.log(this, newColor.toRgbaString());
-        $(this).css('background-color', newColor.toRgbaString());
+var backgroundColorCounts = {};
+var colorCounts = {};
+$.each(document.styleSheets, function (index, styleSheet) {
+    if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
+        $.each(styleSheet.cssRules, function (index, rule) {
+            if (rule.style && rule.style.backgroundColor) {
+                if (rule.style.backgroundColor in backgroundColorCounts) {
+                    backgroundColorCounts[rule.style.backgroundColor]++;
+                }
+                else {
+                    backgroundColorCounts[rule.style.backgroundColor] = 1;
+                }
+            }
+            else if (rule.style && rule.style.color) {
+                if (rule.style.color in colorCounts) {
+                    colorCounts[rule.style.color]++;
+                }
+                else {
+                    colorCounts[rule.style.color] = 1;
+                }
+            }
+        });
     }
 });
+console.log(backgroundColorCounts);
+console.log(colorCounts);
 //# sourceMappingURL=main.js.map
