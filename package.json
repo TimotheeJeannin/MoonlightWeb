@@ -4,5 +4,8 @@
   "dependencies": {
     "jquery": "^2.1.4",
     "jquery-color": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsd": "^0.6.4"
   }
 }

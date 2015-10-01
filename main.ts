@@ -1,5 +1,6 @@
 /// <reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
+
 $('*').each(function () {
     if ($(this).css('background-color') != 'rgba(0, 0, 0, 0)') {
         var elementColor = jQuery.Color($(this), 'background-color');
@@ -8,4 +9,4 @@ $('*').each(function () {
         $(this).css('background-color', elementNewColor);
     }
 });
-//# sourceMappingURL=main.js.map
+
