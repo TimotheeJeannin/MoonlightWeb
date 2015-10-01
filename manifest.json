@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Nice Dark Web Extension",
+  "version": "1.0.0",
+  "permissions": [
+    "storage",
+    "webRequest",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "node_modules/jquery/dist/jquery.min.js",
+        "node_modules/jquery-color/jquery.color.js",
+        "main.js"
+      ]
+    }
+  ]
+}
