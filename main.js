@@ -1,11 +1,12 @@
-/// <reference path="typings/jquery/jquery.d.ts" />
+///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
 $('*').each(function () {
-    if ($(this).css('background-color') != 'rgba(0, 0, 0, 0)') {
-        var elementColor = jQuery.Color($(this), 'background-color');
-        var elementNewColor = jQuery.Color(300 - elementColor.red(), 300 - elementColor.green(), 300 - elementColor.blue(), elementColor.alpha());
-        console.log($(this), elementColor, elementNewColor);
-        $(this).css('background-color', elementNewColor);
+    var color = jQuery.Color($(this).css('background-color'));
+    var reduction = 50;
+    if (color.alpha() > 0) {
+        var newColor = color.red(color.red() > reduction ? color.red() - reduction : color.red()).green(color.green() > reduction ? color.green() - reduction : color.green()).blue(color.blue() > reduction ? color.blue() - reduction : color.blue());
+        console.log(this, newColor.toRgbaString());
+        $(this).css('background-color', newColor.toRgbaString());
     }
 });
 //# sourceMappingURL=main.js.map
