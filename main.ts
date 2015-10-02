@@ -24,7 +24,10 @@ $(document).ready(function () {
             $.each(styleSheet.cssRules, function (index, rule) {
                 if (rule.style) {
                     $.each(colorAttributes, function (index, attribute) {
-                        if (rule.style[attribute]) {
+                        if (rule.style[attribute] &&
+                            rule.style[attribute] != 'inherit' &&
+                            rule.style[attribute] != 'transparent' &&
+                            rule.style[attribute] != 'currentColor') {
                             rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
                         }
                     });
