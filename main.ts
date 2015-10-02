@@ -1,9 +1,7 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
 
-var threshold = 0.15;
-
-var transformColor = function (color:JQueryColor):JQueryColor {
+var transformColor = function (color:JQueryColor, threshold:number):JQueryColor {
     if (color.saturation() > 0.5) {
         return color.lightness(threshold + (1 - color.lightness()) * (1 - threshold)).saturation(0)
     } else {
@@ -27,7 +25,7 @@ $(document).ready(function () {
                 if (rule.style) {
                     $.each(colorAttributes, function (index, attribute) {
                         if (rule.style[attribute]) {
-                            rule.style[attribute] = transformColor($.Color(rule.style[attribute]));
+                            rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
                         }
                     });
                     if (rule.style.backgroundImage && (
