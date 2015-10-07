@@ -35,8 +35,14 @@ $(document).ready(function () {
                             }
                         }
                     });
-                    if (rule.style.backgroundImage && (rule.style.backgroundImage.startsWith('linear-gradient') || rule.style.backgroundImage.startsWith('radial-gradient') || rule.style.backgroundImage.startsWith('repeating-linear-gradient') || rule.style.backgroundImage.startsWith('repeating-radial-gradient'))) {
-                        console.log(rule.style.backgroundImage, rule);
+                    if (rule.style.backgroundImage && (rule.style.backgroundImage.indexOf('linear-gradient') > -1 || rule.style.backgroundImage.indexOf('radial-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-linear-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-radial-gradient') > -1)) {
+                        var gradient = rule.style.backgroundImage;
+                        var colors = gradient.match(/rgba?\(.*?\)/g);
+                        $.each(colors, function (index, color) {
+                            gradient = gradient.replace(color, transformColor($.Color(color), 0.15));
+                        });
+                        console.log(rule.style.backgroundImage + ' - > ' + gradient);
+                        rule.style.backgroundImage = gradient;
                     }
                 }
             });
