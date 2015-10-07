@@ -11,7 +11,7 @@ var transformColor = function (color, threshold) {
         return color.lightness(threshold + (1 - color.lightness()) * (1 - threshold));
     }
 };
-var processCSSRule = function (rule) {
+var processCSSRule = function (index, rule) {
     if (rule.style) {
         $.each([
             'backgroundColor',
@@ -44,9 +44,10 @@ var processCSSRule = function (rule) {
 };
 var processCSSStyleSheet = function (styleSheet) {
     if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
-        $.each(styleSheet.cssRules, function (index, rule) {
-            processCSSRule(rule);
-        });
+        $.each(styleSheet.cssRules, processCSSRule);
+    }
+    else if (styleSheet.rules && styleSheet.rules.length > 0) {
+        $.each(styleSheet.rules, processCSSRule);
     }
 };
 new MutationObserver(function (mutations) {

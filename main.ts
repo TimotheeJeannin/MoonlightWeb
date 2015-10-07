@@ -13,7 +13,7 @@ var transformColor = function (color:JQueryColor, threshold:number):JQueryColor 
     }
 };
 
-var processCSSRule = function (rule:CSSStyleRule) {
+var processCSSRule = function (index:number, rule:CSSStyleRule) {
     if (rule.style) {
         $.each([
             'backgroundColor',
@@ -54,9 +54,9 @@ var processCSSRule = function (rule:CSSStyleRule) {
 
 var processCSSStyleSheet = function (styleSheet:CSSStyleSheet) {
     if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
-        $.each(styleSheet.cssRules, function (index, rule) {
-            processCSSRule(rule);
-        });
+        $.each(styleSheet.cssRules, processCSSRule);
+    } else if (styleSheet.rules && styleSheet.rules.length > 0) {
+        $.each(styleSheet.rules, processCSSRule);
     }
 };
 
