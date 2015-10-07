@@ -11,42 +11,56 @@ var transformColor = function (color, threshold) {
         return color.lightness(threshold + (1 - color.lightness()) * (1 - threshold));
     }
 };
-var colorAttributes = [
-    'backgroundColor',
-    'color',
-    'borderColor',
-    'borderTopColor',
-    'borderRightColor',
-    'borderLeftColor',
-    'borderBottomColor'
-];
+var processCSSRule = function (rule) {
+    if (rule.style) {
+        $.each([
+            'backgroundColor',
+            'color',
+            'borderColor',
+            'borderTopColor',
+            'borderRightColor',
+            'borderLeftColor',
+            'borderBottomColor'
+        ], function (index, attribute) {
+            if (rule.style[attribute] && rule.style[attribute] != 'inherit' && rule.style[attribute] != 'transparent' && rule.style[attribute] != 'currentColor') {
+                if (attribute == 'color') {
+                    rule.style[attribute] = transformTextColor($.Color(rule.style[attribute]));
+                }
+                else {
+                    rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
+                }
+            }
+        });
+        if (rule.style.backgroundImage && (rule.style.backgroundImage.indexOf('linear-gradient') > -1 || rule.style.backgroundImage.indexOf('radial-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-linear-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-radial-gradient') > -1)) {
+            var gradient = rule.style.backgroundImage;
+            var colors = gradient.match(/rgba?\(.*?\)/g);
+            $.each(colors, function (index, color) {
+                gradient = gradient.replace(color, transformColor($.Color(color), 0.15));
+            });
+            console.log(rule.style.backgroundImage + ' - > ' + gradient);
+            rule.style.backgroundImage = gradient;
+        }
+    }
+};
+var processCSSStyleSheet = function (styleSheet) {
+    if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
+        $.each(styleSheet.cssRules, function (index, rule) {
+            processCSSRule(rule);
+        });
+    }
+};
+new MutationObserver(function (mutations) {
+    mutations.forEach(function (mutation) {
+        $.each(mutation.addedNodes, function (index, addedNode) {
+            if (addedNode.sheet) {
+                processCSSStyleSheet(addedNode.sheet);
+            }
+        });
+    });
+}).observe($('head')[0], { childList: true });
 $(document).ready(function () {
     $.each(document.styleSheets, function (index, styleSheet) {
-        if (styleSheet.cssRules && styleSheet.cssRules.length > 0) {
-            $.each(styleSheet.cssRules, function (index, rule) {
-                if (rule.style) {
-                    $.each(colorAttributes, function (index, attribute) {
-                        if (rule.style[attribute] && rule.style[attribute] != 'inherit' && rule.style[attribute] != 'transparent' && rule.style[attribute] != 'currentColor') {
-                            if (attribute == 'color') {
-                                rule.style[attribute] = transformTextColor($.Color(rule.style[attribute]));
-                            }
-                            else {
-                                rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
-                            }
-                        }
-                    });
-                    if (rule.style.backgroundImage && (rule.style.backgroundImage.indexOf('linear-gradient') > -1 || rule.style.backgroundImage.indexOf('radial-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-linear-gradient') > -1 || rule.style.backgroundImage.indexOf('repeating-radial-gradient') > -1)) {
-                        var gradient = rule.style.backgroundImage;
-                        var colors = gradient.match(/rgba?\(.*?\)/g);
-                        $.each(colors, function (index, color) {
-                            gradient = gradient.replace(color, transformColor($.Color(color), 0.15));
-                        });
-                        console.log(rule.style.backgroundImage + ' - > ' + gradient);
-                        rule.style.backgroundImage = gradient;
-                    }
-                }
-            });
-        }
+        processCSSStyleSheet(styleSheet);
     });
 });
 //# sourceMappingURL=main.js.map
