@@ -1,6 +1,10 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
 
+var transformTextColor = function (color:JQueryColor):JQueryColor {
+    return color.lightness(0.75 / (color.lightness() - 1.5) + 1.5);
+};
+
 var transformColor = function (color:JQueryColor, threshold:number):JQueryColor {
     if (color.saturation() > 0.5) {
         return color.lightness(threshold + (1 - color.lightness()) * (1 - threshold)).saturation(0)
@@ -28,7 +32,11 @@ $(document).ready(function () {
                             rule.style[attribute] != 'inherit' &&
                             rule.style[attribute] != 'transparent' &&
                             rule.style[attribute] != 'currentColor') {
-                            rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
+                            if (attribute == 'color') {
+                                rule.style[attribute] = transformTextColor($.Color(rule.style[attribute]));
+                            } else {
+                                rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
+                            }
                         }
                     });
                     if (rule.style.backgroundImage && (

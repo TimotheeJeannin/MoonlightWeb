@@ -1,5 +1,8 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
+var transformTextColor = function (color) {
+    return color.lightness(0.75 / (color.lightness() - 1.5) + 1.5);
+};
 var transformColor = function (color, threshold) {
     if (color.saturation() > 0.5) {
         return color.lightness(threshold + (1 - color.lightness()) * (1 - threshold)).saturation(0);
@@ -24,7 +27,12 @@ $(document).ready(function () {
                 if (rule.style) {
                     $.each(colorAttributes, function (index, attribute) {
                         if (rule.style[attribute] && rule.style[attribute] != 'inherit' && rule.style[attribute] != 'transparent' && rule.style[attribute] != 'currentColor') {
-                            rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
+                            if (attribute == 'color') {
+                                rule.style[attribute] = transformTextColor($.Color(rule.style[attribute]));
+                            }
+                            else {
+                                rule.style[attribute] = transformColor($.Color(rule.style[attribute]), 0.15);
+                            }
                         }
                     });
                     if (rule.style.backgroundImage && (rule.style.backgroundImage.startsWith('linear-gradient') || rule.style.backgroundImage.startsWith('radial-gradient') || rule.style.backgroundImage.startsWith('repeating-linear-gradient') || rule.style.backgroundImage.startsWith('repeating-radial-gradient'))) {
