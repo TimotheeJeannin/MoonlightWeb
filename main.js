@@ -1,7 +1,8 @@
 ///<reference path="typings/jquery/jquery.d.ts" />
 ///<reference path="typings/jquery.color/jquery.color.d.ts"/>
 var transformTextColor = function (color) {
-    return color.lightness(0.75 / (color.lightness() - 1.5) + 1.5);
+    var color = color.lightness((0.75 / (color.lightness() - 1.5) + 1.5) * 0.5);
+    return color.saturation(0.8 * color.saturation());
 };
 var transformColor = function (color, threshold) {
     if (color.saturation() > 0.5) {
