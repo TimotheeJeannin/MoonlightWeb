@@ -60,6 +60,21 @@ var processCSSStyleSheet = function (styleSheet:CSSStyleSheet) {
     }
 };
 
+var extractDomain = function (url) {
+    var link = document.createElement('a');
+    link.href = url;
+    return link.hostname;
+};
+
+var insertStyleSheetAsStyle = function (url:string) {
+    $.ajax({url: url}).done(function (css) {
+        var style = document.createElement('style');
+        style.type = 'text/css';
+        style.appendChild(document.createTextNode(css));
+        $('head')[0].appendChild(style);
+    });
+};
+
 new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         $.each(mutation.addedNodes, function (index, addedNode) {
@@ -73,6 +88,11 @@ new MutationObserver(function (mutations) {
 
 $(document).ready(function () {
     $.each(document.styleSheets, function (index, styleSheet) {
+        if (!styleSheet.cssRules && !styleSheet.rules && styleSheet.href) {
+            if (extractDomain(styleSheet.href) !== window.location.host) {
+                insertStyleSheetAsStyle(styleSheet.href);
+            }
+        }
         processCSSStyleSheet(styleSheet);
     });
 });
